@@ -39,16 +39,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         view.addSubview(titleLabel)
         
         NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: self.view.safeTopAnchor),
             titleLabel.rightAnchor.constraint(equalTo: self.view.rightAnchor),
             titleLabel.leftAnchor.constraint(equalTo: self.view.leftAnchor)
         ])
-        
-        if #available(iOS 11, *) {
-            let guide = view.safeAreaLayoutGuide
-            titleLabel.topAnchor.constraint(equalTo: guide.topAnchor).isActive = true
-        } else {
-            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 16).isActive = true
-        }
     }
 
     func setupTableView() {
@@ -58,9 +52,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
-            tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
-            tableView.rightAnchor.constraint(equalTo: self.view.rightAnchor),
-            tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor)
+            tableView.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor),
+            tableView.leftAnchor.constraint(equalTo: self.view.safeLeftAnchor),
+            tableView.safeRightAnchor.constraint(equalTo: self.view.safeRightAnchor)
         ])
         
         tableView.delegate = self
