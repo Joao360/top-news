@@ -9,7 +9,7 @@ import UIKit
 
 class CategoryTableViewCell: UITableViewCell {
     
-    lazy var cellView: UIView = {
+    let cellView: UIView = {
        let view = UIView()
         view.backgroundColor = UIColor.darkGray
         view.layer.cornerRadius = 10
