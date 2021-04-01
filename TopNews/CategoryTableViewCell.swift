@@ -9,19 +9,20 @@ import UIKit
 
 class CategoryTableViewCell: UITableViewCell {
     
-    let cellView: UIView = {
+    lazy var cellView: UIView = {
        let view = UIView()
-        view.backgroundColor = UIColor.red
+        view.backgroundColor = UIColor.darkGray
         view.layer.cornerRadius = 10
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
-    let label: UILabel = {
+    lazy var label: UILabel = {
         let label = UILabel()
         label.text = "Some Text"
         label.textColor = UIColor.white
         label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -51,7 +52,7 @@ class CategoryTableViewCell: UITableViewCell {
         label.heightAnchor.constraint(equalToConstant: 200).isActive = true
         label.widthAnchor.constraint(equalToConstant: 200).isActive = true
         label.centerYAnchor.constraint(equalTo: cellView.centerYAnchor).isActive = true
-        label.leftAnchor.constraint(equalTo: cellView.leftAnchor, constant: 20).isActive = true
+        label.centerXAnchor.constraint(equalTo: cellView.centerXAnchor).isActive = true
     }
 
     override func awakeFromNib() {

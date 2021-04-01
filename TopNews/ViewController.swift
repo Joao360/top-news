@@ -13,15 +13,42 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     let tableView: UITableView = {
         let tv = UITableView()
-        tv.backgroundColor = UIColor.white
+        tv.backgroundColor = UIColor.clear
         tv.translatesAutoresizingMaskIntoConstraints = false
         return tv
+    }()
+    
+    lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Categories"
+        label.textColor = UIColor.darkGray
+        label.font = UIFont.boldSystemFont(ofSize: 24)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        setupTitleLabel()
         setupTableView()
+    }
+    
+    func setupTitleLabel() {
+        view.addSubview(titleLabel)
+        
+        NSLayoutConstraint.activate([
+            titleLabel.rightAnchor.constraint(equalTo: self.view.rightAnchor),
+            titleLabel.leftAnchor.constraint(equalTo: self.view.leftAnchor)
+        ])
+        
+        if #available(iOS 11, *) {
+            let guide = view.safeAreaLayoutGuide
+            titleLabel.topAnchor.constraint(equalTo: guide.topAnchor).isActive = true
+        } else {
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 16).isActive = true
+        }
     }
 
     func setupTableView() {
@@ -30,7 +57,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
             tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
             tableView.rightAnchor.constraint(equalTo: self.view.rightAnchor),
             tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor)
@@ -48,7 +75,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath) as! CategoryTableViewCell
-        cell.backgroundColor = UIColor.white
+        cell.backgroundColor = UIColor.clear
         cell.label.text = categories[indexPath.row]
         return cell
     }
