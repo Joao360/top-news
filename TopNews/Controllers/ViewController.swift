@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {    
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private let mainView = MainView()
     
     override func loadView() {
@@ -21,6 +21,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         mainView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         mainView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        mainView.titleLabel.text = "Categories"
         
         mainView.loadView()
     }

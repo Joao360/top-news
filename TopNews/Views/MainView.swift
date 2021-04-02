@@ -18,7 +18,6 @@ class MainView: UIView {
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Categories"
         label.textColor = UIColor.darkGray
         label.font = UIFont.boldSystemFont(ofSize: 24)
         label.textAlignment = .center

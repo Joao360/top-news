@@ -105,11 +105,11 @@
 		9D43AFAE26124E3800843B9B /* TopNews */ = {
 			isa = PBXGroup;
 			children = (
+				9D60AE2B261745380020DB2F /* Models */,
+				9D60AE2A261745180020DB2F /* Controllers */,
 				9D60AE232617415C0020DB2F /* Views */,
-				9D60AE1D261736F60020DB2F /* Domain */,
 				9D43AFAF26124E3800843B9B /* AppDelegate.swift */,
 				9D43AFB126124E3800843B9B /* SceneDelegate.swift */,
-				9D43AFB326124E3800843B9B /* ViewController.swift */,
 				9D43AFB826124E3900843B9B /* Assets.xcassets */,
 				9D43AFBA26124E3900843B9B /* LaunchScreen.storyboard */,
 				9D43AFBD26124E3900843B9B /* Info.plist */,
@@ -136,14 +136,6 @@
 			path = TopNewsUITests;
 			sourceTree = "<group>";
 		};
-		9D60AE1D261736F60020DB2F /* Domain */ = {
-			isa = PBXGroup;
-			children = (
-				9D60AE1E261737060020DB2F /* Category.swift */,
-			);
-			path = Domain;
-			sourceTree = "<group>";
-		};
 		9D60AE232617415C0020DB2F /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -151,6 +143,22 @@
 				9D60AE242617418C0020DB2F /* MainView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		9D60AE2A261745180020DB2F /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				9D43AFB326124E3800843B9B /* ViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		9D60AE2B261745380020DB2F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9D60AE1E261737060020DB2F /* Category.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
