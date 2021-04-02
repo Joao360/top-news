@@ -7,71 +7,42 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {    
+    private let mainView = MainView()
     
-    let categories = ["business", "entertainment",  "general", "health", "science", "sports", "technology"]
-    
-    let tableView: UITableView = {
-        let tv = UITableView()
-        tv.backgroundColor = UIColor.clear
-        tv.translatesAutoresizingMaskIntoConstraints = false
-        return tv
-    }()
-    
-    lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Categories"
-        label.textColor = UIColor.darkGray
-        label.font = UIFont.boldSystemFont(ofSize: 24)
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    override func loadView() {
+        super.loadView()
+        
+        mainView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(mainView)
+        
+        mainView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        mainView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        mainView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        mainView.loadView()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         view.backgroundColor = UIColor.white
-        setupTitleLabel()
-        setupTableView()
-    }
-    
-    func setupTitleLabel() {
-        view.addSubview(titleLabel)
         
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: self.view.safeTopAnchor),
-            titleLabel.rightAnchor.constraint(equalTo: self.view.rightAnchor),
-            titleLabel.leftAnchor.constraint(equalTo: self.view.leftAnchor)
-        ])
-    }
-
-    func setupTableView() {
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellId")
-        
-        view.addSubview(tableView)
-        
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
-            tableView.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor),
-            tableView.leftAnchor.constraint(equalTo: self.view.safeLeftAnchor),
-            tableView.safeRightAnchor.constraint(equalTo: self.view.safeRightAnchor)
-        ])
-        
-        tableView.delegate = self
-        tableView.dataSource = self
-        
-        tableView.register(CategoryTableViewCell.self, forCellReuseIdentifier: "cellId")
+        mainView.tableView.register(CategoryTableViewCell.self, forCellReuseIdentifier: "cellId")
+        mainView.tableView.delegate = self
+        mainView.tableView.dataSource = self
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        return DEFAULT_CATEGORIES.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath) as! CategoryTableViewCell
         cell.backgroundColor = UIColor.clear
-        cell.label.text = categories[indexPath.row]
+        cell.label.text = DEFAULT_CATEGORIES[indexPath.row].name
         return cell
     }
     
