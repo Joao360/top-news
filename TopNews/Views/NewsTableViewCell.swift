@@ -1,27 +1,36 @@
 //
-//  CategoryTableViewCell.swift
+//  NewsTableViewCell.swift
 //  TopNews
 //
-//  Created by João Graça on 30/03/2021.
+//  Created by João Graça on 02/04/2021.
 //
 
 import UIKit
 
-class CategoryTableViewCell: UITableViewCell {
+class NewsTableViewCell: UITableViewCell {
+    
     lazy var cellView: UIView = {
-       let view = UIView()
-        view.backgroundColor = UIColor.darkGray
+        let view = UIView()
+        view.backgroundColor = UIColor.lightGray
         view.layer.cornerRadius = 10
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
-    lazy var label: UILabel = {
+    lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Some Text"
+        label.text = "Here stands the title, first of its name"
         label.textColor = UIColor.white
         label.font = UIFont.boldSystemFont(ofSize: 16)
-        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    lazy var dateLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Here stands the date, first of its name"
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -38,22 +47,21 @@ class CategoryTableViewCell: UITableViewCell {
     
     func setupView() {
         addSubview(cellView)
-        cellView.addSubview(label)
-        self.selectionStyle = .none
+        cellView.addSubview(titleLabel)
+        cellView.addSubview(dateLabel)
         
         NSLayoutConstraint.activate([
-            cellView.topAnchor.constraint(equalTo: self.topAnchor, constant: 20),
+            cellView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
             cellView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10),
             cellView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10),
-            cellView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            cellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 10),
+            titleLabel.topAnchor.constraint(equalTo: cellView.topAnchor, constant: 8),
+            titleLabel.leadingAnchor.constraint(equalTo: cellView.leadingAnchor, constant: 8),
+            dateLabel.bottomAnchor.constraint(equalTo: cellView.bottomAnchor, constant: 8),
+            dateLabel.trailingAnchor.constraint(equalTo: cellView.trailingAnchor, constant: 8),
         ])
-        
-        label.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        label.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        label.centerYAnchor.constraint(equalTo: cellView.centerYAnchor).isActive = true
-        label.centerXAnchor.constraint(equalTo: cellView.centerXAnchor).isActive = true
     }
-
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -64,4 +72,5 @@ class CategoryTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+
 }

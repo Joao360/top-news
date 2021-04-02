@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  MainViewController.swift
 //  TopNews
 //
 //  Created by João Graça on 29/03/2021.
@@ -7,8 +7,14 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    private let mainView = MainView()
+class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    private lazy var mainView = MainView()
+    private lazy var loadingViewController: LoadingViewController = {
+        let vc = LoadingViewController()
+        vc.modalPresentationStyle = .overCurrentContext
+        vc.modalTransitionStyle = .crossDissolve
+        return vc
+    }()
     
     override func loadView() {
         super.loadView()
@@ -26,7 +32,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         mainView.loadView()
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -50,6 +56,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        present(loadingViewController, animated: true, completion: nil)
+        
+        APIService().fetchTopHeadlinesFor(category: DEFAULT_CATEGORIES[indexPath.row].apiParameter, page: 1) { [weak self] (error, articles)  in
+            
+            print("ERROR: \(error ?? "None")")
+            print("ARTICLES: \(articles ?? [])")
+            
+            DispatchQueue.main.async {
+                self?.loadingViewController.dismiss(animated: true, completion: nil)
+            }
+        }
     }
 }
 
