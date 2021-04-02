@@ -20,6 +20,8 @@ class NewsTableViewCell: UITableViewCell {
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Here stands the title, first of its name"
+        label.numberOfLines = 2
+        label.sizeToFit()
         label.textColor = UIColor.white
         label.font = UIFont.boldSystemFont(ofSize: 16)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -51,14 +53,18 @@ class NewsTableViewCell: UITableViewCell {
         cellView.addSubview(dateLabel)
         
         NSLayoutConstraint.activate([
-            cellView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
+            cellView.topAnchor.constraint(equalTo: self.topAnchor, constant: 8),
             cellView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10),
             cellView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10),
-            cellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 10),
+            cellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8),
+            
             titleLabel.topAnchor.constraint(equalTo: cellView.topAnchor, constant: 8),
             titleLabel.leadingAnchor.constraint(equalTo: cellView.leadingAnchor, constant: 8),
-            dateLabel.bottomAnchor.constraint(equalTo: cellView.bottomAnchor, constant: 8),
-            dateLabel.trailingAnchor.constraint(equalTo: cellView.trailingAnchor, constant: 8),
+            titleLabel.trailingAnchor.constraint(equalTo: cellView.trailingAnchor, constant: -8),
+            titleLabel.bottomAnchor.constraint(equalTo: dateLabel.topAnchor, constant: -8),
+            
+            dateLabel.bottomAnchor.constraint(equalTo: cellView.bottomAnchor, constant: -8),
+            dateLabel.trailingAnchor.constraint(equalTo: cellView.trailingAnchor, constant: -8),
         ])
     }
     

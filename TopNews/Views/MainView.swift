@@ -16,31 +16,16 @@ class MainView: UIView {
         return tv
     }()
     
-    lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor.darkGray
-        label.font = UIFont.boldSystemFont(ofSize: 24)
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
     func loadView() {
         self.backgroundColor = .white
-        self.addSubview(titleLabel)
         self.addSubview(tableView)
         setupLayout()
     }
     
     func setupLayout() {
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: self.safeTopAnchor),
-            titleLabel.rightAnchor.constraint(equalTo: self.rightAnchor),
-            titleLabel.leftAnchor.constraint(equalTo: self.leftAnchor)
-        ])
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
+            tableView.topAnchor.constraint(equalTo: self.safeTopAnchor, constant: 16),
             tableView.bottomAnchor.constraint(equalTo: self.safeBottomAnchor),
             tableView.leftAnchor.constraint(equalTo: self.safeLeftAnchor),
             tableView.safeRightAnchor.constraint(equalTo: self.safeRightAnchor)

@@ -8,7 +8,9 @@
 import UIKit
 
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    // Controller's view
     private lazy var mainView = MainView()
+    // Loading View Controller to show a loader that blocks any user interaction
     private lazy var loadingViewController: LoadingViewController = {
         let vc = LoadingViewController()
         vc.modalPresentationStyle = .overCurrentContext
@@ -19,6 +21,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func loadView() {
         super.loadView()
         
+        // Will put view in place and load it
         mainView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(mainView)
@@ -28,7 +31,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         mainView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         
-        mainView.titleLabel.text = "Categories"
+        title = "Categories"
         
         mainView.loadView()
     }
@@ -43,10 +46,14 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         mainView.tableView.dataSource = self
     }
     
+    // MARK: - TableView
+    
+    // Use the DEFAULT_CATEGORIES as the table's content
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return DEFAULT_CATEGORIES.count
     }
     
+    // Fill cell with the category's name
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath) as! CategoryTableViewCell
         cell.backgroundColor = UIColor.clear
@@ -54,20 +61,36 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         return cell
     }
     
+    // Default value for cell height
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100
     }
     
+    // It will fetch the data for that category and navigate to a new screen to display the info
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         present(loadingViewController, animated: true, completion: nil)
         
-        APIService().fetchTopHeadlinesFor(category: DEFAULT_CATEGORIES[indexPath.row].apiParameter, page: 1) { [weak self] (error, articles)  in
-            
-            print("ERROR: \(error ?? "None")")
-            print("ARTICLES: \(articles ?? [])")
+        let category: Category = DEFAULT_CATEGORIES[indexPath.row]
+        APIService().fetchTopHeadlinesFor(category: category.apiParameter, page: 1) { [weak self] (error, articles)  in
             
             DispatchQueue.main.async {
-                self?.loadingViewController.dismiss(animated: true, completion: nil)
+                self?.loadingViewController.dismiss(animated: true) {
+                    if let articles = articles {
+                        let newsVC = NewsViewController()
+                        newsVC.articles = articles
+                        newsVC.category = category.name
+                        
+                        self?.navigationController?.pushViewController(newsVC, animated: true)
+                    } else if let error = error {
+                        let alert = UIAlertController(title: "Something went wrong", message: error, preferredStyle: .alert)
+                        
+                        alert.addAction(UIAlertAction(title: "Ok", style: .default) { _ in
+                            alert.dismiss(animated: true)
+                        })
+                        
+                        self?.present(alert, animated: true, completion: nil)
+                    }
+                }
             }
         }
     }

@@ -9,7 +9,7 @@ import UIKit
 
 class CategoryTableViewCell: UITableViewCell {
     lazy var cellView: UIView = {
-       let view = UIView()
+        let view = UIView()
         view.backgroundColor = UIColor.darkGray
         view.layer.cornerRadius = 10
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -42,26 +42,26 @@ class CategoryTableViewCell: UITableViewCell {
         self.selectionStyle = .none
         
         NSLayoutConstraint.activate([
-            cellView.topAnchor.constraint(equalTo: self.topAnchor, constant: 20),
+            cellView.topAnchor.constraint(equalTo: self.topAnchor, constant: 8),
             cellView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10),
             cellView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10),
-            cellView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            cellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8),
+            
+            label.heightAnchor.constraint(equalToConstant: 200),
+            label.widthAnchor.constraint(equalToConstant: 200),
+            label.centerYAnchor.constraint(equalTo: cellView.centerYAnchor),
+            label.centerXAnchor.constraint(equalTo: cellView.centerXAnchor),
         ])
-        
-        label.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        label.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        label.centerYAnchor.constraint(equalTo: cellView.centerYAnchor).isActive = true
-        label.centerXAnchor.constraint(equalTo: cellView.centerXAnchor).isActive = true
     }
-
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
 }
