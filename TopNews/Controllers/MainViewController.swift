@@ -71,7 +71,8 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         present(loadingViewController, animated: true, completion: nil)
         
         let category: Category = DEFAULT_CATEGORIES[indexPath.row]
-        APIService().fetchTopHeadlinesFor(category: category.apiParameter, page: 1) { [weak self] (error, articles)  in
+        let apiService = APIService()
+        apiService.fetchTopHeadlinesFor(category: category.apiParameter, page: 1) { [weak self] (error, articles)  in
             
             DispatchQueue.main.async {
                 self?.loadingViewController.dismiss(animated: true) {
@@ -79,6 +80,9 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
                         let newsVC = NewsViewController()
                         newsVC.articles = articles
                         newsVC.category = category.name
+                        newsVC.fetchNewArticles = { completionHandler in
+                            apiService.fetchTopHeadlinesFor(category: category.apiParameter, page: 1, completionHandler: completionHandler)
+                        }
                         
                         self?.navigationController?.pushViewController(newsVC, animated: true)
                     } else if let error = error {

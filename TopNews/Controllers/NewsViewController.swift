@@ -11,8 +11,10 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var articles: [Article] = []
     var category: String?
+    var fetchNewArticles: (@escaping (String?, [Article]?) -> Void) -> Void = { completionHandler in completionHandler(nil, nil) }
     
     private lazy var mainView = MainView()
+    private lazy var refreshControl = UIRefreshControl()
 
     override func loadView() {
         super.loadView()
@@ -40,6 +42,37 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         mainView.tableView.register(NewsTableViewCell.self, forCellReuseIdentifier: "newsCellId")
         mainView.tableView.delegate = self
         mainView.tableView.dataSource = self
+        
+        // Add Refresh Control to Table View
+        if #available(iOS 10.0, *) {
+            mainView.tableView.refreshControl = refreshControl
+        } else {
+            mainView.tableView.addSubview(refreshControl)
+        }
+        
+        refreshControl.addTarget(self, action: #selector(refreshData(_:)), for: .valueChanged)
+        refreshControl.attributedTitle = NSAttributedString(string: "Fetching New Data ...")
+    }
+    
+    @objc private func refreshData(_ sender: Any) {
+        // Fetch Weather Data
+        fetchNewArticles { [weak self] (error, articles) in
+            DispatchQueue.main.async {
+                self?.refreshControl.endRefreshing()
+                
+                if let articles = articles {
+                    self?.articles = articles
+                } else if let error = error {
+                    let alert = UIAlertController(title: "Something went wrong", message: error, preferredStyle: .alert)
+                    
+                    alert.addAction(UIAlertAction(title: "Ok", style: .default) { _ in
+                        alert.dismiss(animated: true)
+                    })
+                    
+                    self?.present(alert, animated: true, completion: nil)
+                }
+            }
+        }
     }
 
     // MARK: - TableView
@@ -64,6 +97,11 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let article = articles[indexPath.row]
         
+        let webvc = WebViewController()
+        webvc.url = article.url
+        
+        self.navigationController?.pushViewController(webvc, animated: true)
     }
 }

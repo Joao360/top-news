@@ -17,7 +17,7 @@ struct APIService {
         let countryCode = Locale.current.regionCode
         
         let queryItems = [
-            URLQueryItem(name: "country", value: countryCode),
+            URLQueryItem(name: "country", value: countryCode ?? "us"),
             URLQueryItem(name: "category", value: category),
             URLQueryItem(name: "pageSize", value: String(pageSize)),
             apiKeyQueryItem,
@@ -43,6 +43,7 @@ struct APIService {
             if let data = data {
                 do {
                     let topHeadlines = try JSONDecoder().decode(TopHeadlinesResponse.self, from: data)
+                    print("Received \(topHeadlines.totalResults) new articles")
                     completionHandler(nil, topHeadlines.articles)
                 } catch {
                     print(error)
