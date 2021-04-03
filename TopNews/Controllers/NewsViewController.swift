@@ -32,7 +32,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         mainView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         
-        title = delegate.category != nil ? "News for \(delegate.category!)" : "News"
+        title = delegate.category != nil ? "News for \(delegate.category!.name)" : "News"
         
         mainView.loadView()
     }
