@@ -9,15 +9,20 @@ import UIKit
 
 class NewsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
+    // Articles to be shown on the table view
     var articles: [Article] = []
+    // Used to fetch the next page
     var category: String?
-    var fetchNewArticles: (@escaping (String?, [Article]?) -> Void) -> Void = { completionHandler in completionHandler(nil, nil) }
+    // Callback used to retrieve articles according to the page
+    var fetchArticlesForPage: (_ page: Int, @escaping (String?, [Article]?) -> Void) -> Void = { _, completionHandler in completionHandler(nil, nil) }
     
     private lazy var mainView = MainView()
+    // Used to pull to refresh
     private lazy var refreshControl = UIRefreshControl()
+    
+    // Flag used to avoid multiple data fetches at the same time
     private var isFetching = false
     private var currentPage = 1
-    private let apiService = APIService()
     
     override func loadView() {
         super.loadView()
@@ -58,9 +63,10 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         refreshControl.attributedTitle = NSAttributedString(string: "Fetching New Data ...")
     }
     
+    // It will fetch the first page of the collection and override the articles array with the response
     @objc private func refreshData(_ sender: Any) {
         // Fetch Weather Data
-        fetchNewArticles { [weak self] (error, articles) in
+        fetchArticlesForPage(1) { [weak self] (error, articles) in
             DispatchQueue.main.async {
                 self?.refreshControl.endRefreshing()
                 
@@ -79,8 +85,9 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
+    // Retrieves the image from an url and overrides the cell image with the result if successful
     fileprivate func fetchArticleImage(_ url: String, _ cell: NewsTableViewCell) {
-        apiService.fetchDataFrom(url: URL(string: url)!) { error, data in
+        APIService().fetchDataFrom(url: URL(string: url)!) { error, data in
             if let error = error {
                 print("Error fetching image with url \(url). Error: \(error)")
                 return
@@ -95,13 +102,15 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
+    // It will add an extra cell to show a loading indicator while fetching. On its conclusion it will remove that cell and add the
+    // extra data in case of sucess
     private func fetchNextPage() {
-        guard let category = category, isFetching == false else { return }
+        guard isFetching == false else { return }
         isFetching = true
         currentPage += 1
         print("Fetching page number \(currentPage)")
         self.mainView.tableView.reloadData()
-        apiService.fetchTopHeadlinesFor(category: category, page: currentPage) { [weak self] error, articles in
+        fetchArticlesForPage(currentPage) { [weak self] error, articles in
             self?.isFetching = false
             
             if let error = error {
@@ -132,6 +141,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         return 300
     }
     
+    // It will render the article or loading cell, and also launch new request for the next page on rendering the last article
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var tableViewCell: UITableViewCell!
         
@@ -165,6 +175,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         return tableViewCell
     }
     
+    // Will open a web view to show the article
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let article = articles[indexPath.row]
         

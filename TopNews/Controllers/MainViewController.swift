@@ -80,8 +80,8 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
                         let newsVC = NewsViewController()
                         newsVC.articles = articles
                         newsVC.category = category.name
-                        newsVC.fetchNewArticles = { completionHandler in
-                            apiService.fetchTopHeadlinesFor(category: category.apiParameter, page: 1, completionHandler: completionHandler)
+                        newsVC.fetchArticlesForPage = { page, completionHandler in
+                            apiService.fetchTopHeadlinesFor(category: category.apiParameter, page: page, completionHandler: completionHandler)
                         }
                         
                         self?.navigationController?.pushViewController(newsVC, animated: true)
