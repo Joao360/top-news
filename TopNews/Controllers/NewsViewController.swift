@@ -81,7 +81,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     // Retrieves the image from an url and overrides the cell image with the result if successful
-    fileprivate func fetchArticleImage(_ url: String, _ cell: NewsTableViewCell) {
+    fileprivate func fetchArticleImage(url: String, index: IndexPath) {
         let _ = APIService().fetchDataFrom(url: URL(string: url)!) { error, data in
             if let error = error {
                 print("Error fetching image with url \(url). Error: \(error)")
@@ -91,7 +91,9 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
             if let data = data {
                 let img = UIImage(data: data)
                 DispatchQueue.main.async {
-                    cell.articleImage.image = img
+                    if let cell = self.mainView.tableView.cellForRow(at: index) as? NewsTableViewCell {
+                        cell.articleImage.image = img
+                    }
                 }
             }
         }
@@ -151,7 +153,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
             cell.dateLabel.text = article.publishedAt
             
             if let url = article.urlToImage {
-                fetchArticleImage(url, cell)
+                fetchArticleImage(url: url, index: indexPath)
             }
             
             tableViewCell = cell
