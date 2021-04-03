@@ -28,6 +28,21 @@ struct APIService {
         
         let url = urlComponents.url!
         
+        fetchDataFrom(url: url) { error, data in
+            if let data = data {
+                do {
+                    let topHeadlines = try JSONDecoder().decode(TopHeadlinesResponse.self, from: data)
+                    print("Received \(topHeadlines.totalResults) new articles")
+                    completionHandler(nil, topHeadlines.articles)
+                } catch {
+                    print(error)
+                    completionHandler(error.localizedDescription, nil)
+                }
+            }
+        }
+    }
+    
+    func fetchDataFrom(url: URL, completionHandler: @escaping (String?, Data?) -> Void) {
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
                 completionHandler("Error accessing api: \(error)", nil)
@@ -41,14 +56,9 @@ struct APIService {
             }
             
             if let data = data {
-                do {
-                    let topHeadlines = try JSONDecoder().decode(TopHeadlinesResponse.self, from: data)
-                    print("Received \(topHeadlines.totalResults) new articles")
-                    completionHandler(nil, topHeadlines.articles)
-                } catch {
-                    print(error)
-                    completionHandler(error.localizedDescription, nil)
-                }
+                completionHandler(nil, data)
+            } else {
+                completionHandler(nil, nil)
             }
         }
         

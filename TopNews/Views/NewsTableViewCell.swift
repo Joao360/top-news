@@ -20,7 +20,7 @@ class NewsTableViewCell: UITableViewCell {
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Here stands the title, first of its name"
-        label.numberOfLines = 2
+        label.numberOfLines = 3
         label.sizeToFit()
         label.textColor = UIColor.white
         label.font = UIFont.boldSystemFont(ofSize: 16)
@@ -37,6 +37,15 @@ class NewsTableViewCell: UITableViewCell {
         return label
     }()
     
+    lazy var articleImage: UIImageView = {
+        let img = UIImageView(image: UIImage(named: "default"))
+        img.contentMode = .scaleAspectFill
+        img.layer.masksToBounds = true
+        
+        img.translatesAutoresizingMaskIntoConstraints = false
+        return img
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -51,6 +60,7 @@ class NewsTableViewCell: UITableViewCell {
         addSubview(cellView)
         cellView.addSubview(titleLabel)
         cellView.addSubview(dateLabel)
+        cellView.addSubview(articleImage)
         
         NSLayoutConstraint.activate([
             cellView.topAnchor.constraint(equalTo: self.topAnchor, constant: 8),
@@ -58,7 +68,12 @@ class NewsTableViewCell: UITableViewCell {
             cellView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10),
             cellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8),
             
-            titleLabel.topAnchor.constraint(equalTo: cellView.topAnchor, constant: 8),
+            articleImage.heightAnchor.constraint(equalToConstant: 160),
+            articleImage.widthAnchor.constraint(equalTo: cellView.widthAnchor),
+            articleImage.topAnchor.constraint(equalTo: cellView.topAnchor, constant: 8),
+            articleImage.centerXAnchor.constraint(equalTo: cellView.centerXAnchor),
+            
+            titleLabel.topAnchor.constraint(equalTo: articleImage.bottomAnchor, constant: 8),
             titleLabel.leadingAnchor.constraint(equalTo: cellView.leadingAnchor, constant: 8),
             titleLabel.trailingAnchor.constraint(equalTo: cellView.trailingAnchor, constant: -8),
             titleLabel.bottomAnchor.constraint(equalTo: dateLabel.topAnchor, constant: -8),

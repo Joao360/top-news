@@ -74,6 +74,22 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
     }
+    
+    fileprivate func fetchArticleImage(_ url: String, _ cell: NewsTableViewCell) {
+        APIService().fetchDataFrom(url: URL(string: url)!) { error, data in
+            var img = UIImage(named: "default")
+            
+            if let error = error {
+                print("Error fetching image with url \(url). Error: \(error)")
+            } else if let data = data {
+                img = UIImage(data: data)
+            }
+            
+            DispatchQueue.main.async {
+                cell.articleImage.image = img
+            }
+        }
+    }
 
     // MARK: - TableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -82,7 +98,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     // Default value for cell height
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
+        return 300
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -92,6 +108,10 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.backgroundColor = UIColor.clear
         cell.titleLabel.text = article.title
         cell.dateLabel.text = article.publishedAt
+        
+        if let url = article.urlToImage {
+            fetchArticleImage(url, cell)
+        }
         
         return cell
     }
