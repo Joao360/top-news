@@ -7,7 +7,9 @@
 
 import UIKit
 
-class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NewsDelegate {
+    private let apiService = APIService()
+    
     // Controller's view
     private lazy var mainView = MainView()
     // Loading View Controller to show a loader that blocks any user interaction
@@ -71,18 +73,15 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         present(loadingViewController, animated: true, completion: nil)
         
         let category: Category = DEFAULT_CATEGORIES[indexPath.row]
-        let apiService = APIService()
         apiService.fetchTopHeadlinesFor(category: category.apiParameter, page: 1) { [weak self] (error, articles)  in
             
             DispatchQueue.main.async {
                 self?.loadingViewController.dismiss(animated: true) {
                     if let articles = articles {
                         let newsVC = NewsViewController()
-                        newsVC.articles = articles
-                        newsVC.category = category.name
-                        newsVC.fetchArticlesForPage = { page, completionHandler in
-                            apiService.fetchTopHeadlinesFor(category: category.apiParameter, page: page, completionHandler: completionHandler)
-                        }
+                        newsVC.delegate = self
+                        self?.articles = articles
+                        self?.category = category
                         
                         self?.navigationController?.pushViewController(newsVC, animated: true)
                     } else if let error = error {
@@ -97,6 +96,15 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
                 }
             }
         }
+    }
+    
+    // MARK: - NewsDelegate
+    var articles: [Article] = []
+    
+    var category: Category?
+    
+    func fetchArticles(page: Int, completionHandler: @escaping (String?, [Article]?) -> Void) {
+        apiService.fetchTopHeadlinesFor(category: self.category!.apiParameter, page: page, completionHandler: completionHandler)
     }
 }
 

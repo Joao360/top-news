@@ -9,12 +9,7 @@ import UIKit
 
 class NewsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    // Articles to be shown on the table view
-    var articles: [Article] = []
-    // Used to fetch the next page
-    var category: String?
-    // Callback used to retrieve articles according to the page
-    var fetchArticlesForPage: (_ page: Int, @escaping (String?, [Article]?) -> Void) -> Void = { _, completionHandler in completionHandler(nil, nil) }
+    var delegate: NewsDelegate!
     
     private lazy var mainView = MainView()
     // Used to pull to refresh
@@ -37,7 +32,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         mainView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         
-        title = category != nil ? "News for \(category!)" : "News"
+        title = delegate.category != nil ? "News for \(delegate.category!)" : "News"
         
         mainView.loadView()
     }
@@ -66,12 +61,12 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     // It will fetch the first page of the collection and override the articles array with the response
     @objc private func refreshData(_ sender: Any) {
         // Fetch Weather Data
-        fetchArticlesForPage(1) { [weak self] (error, articles) in
+        delegate.fetchArticles(page: 1) { [weak self] (error, articles) in
             DispatchQueue.main.async {
                 self?.refreshControl.endRefreshing()
                 
                 if let articles = articles {
-                    self?.articles = articles
+                    self?.delegate.articles = articles
                 } else if let error = error {
                     let alert = UIAlertController(title: "Something went wrong", message: error, preferredStyle: .alert)
                     
@@ -110,7 +105,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         currentPage += 1
         print("Fetching page number \(currentPage)")
         self.mainView.tableView.reloadData()
-        fetchArticlesForPage(currentPage) { [weak self] error, articles in
+        delegate.fetchArticles(page: currentPage) { [weak self] error, articles in
             self?.isFetching = false
             
             if let error = error {
@@ -122,7 +117,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
             if let articles = articles {
-                self?.articles.append(contentsOf: articles)
+                self?.delegate.articles.append(contentsOf: articles)
             }
             
             DispatchQueue.main.async {
@@ -133,7 +128,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     // MARK: - TableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return articles.count + (isFetching ? 1 : 0)
+        return delegate.articles.count + (isFetching ? 1 : 0)
     }
     
     // Default value for cell height
@@ -145,10 +140,10 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var tableViewCell: UITableViewCell!
         
-        if indexPath.row < articles.count {
+        if indexPath.row < delegate.articles.count {
             // It's an article cell
             let cell = tableView.dequeueReusableCell(withIdentifier: "newsCellId", for: indexPath) as! NewsTableViewCell
-            let article = articles[indexPath.row]
+            let article = delegate.articles[indexPath.row]
             
             cell.articleImage.image = UIImage(named: "default")
             cell.backgroundColor = UIColor.clear
@@ -160,7 +155,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
             tableViewCell = cell
-        } else if indexPath.row == articles.count {
+        } else if indexPath.row == delegate.articles.count {
             // It's the loading cell
             let cell = tableView.dequeueReusableCell(withIdentifier: "loadingCell", for: indexPath) as! LoadingTableViewCell
             cell.loadingActivityIndicator.startAnimating()
@@ -168,7 +163,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         // Reached last element, load next page if it's not fetching already
-        if indexPath.row == articles.count - 1 && !isFetching {
+        if indexPath.row == delegate.articles.count - 1 && !isFetching {
             fetchNextPage()
         }
         
@@ -177,7 +172,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     // Will open a web view to show the article
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let article = articles[indexPath.row]
+        let article = delegate.articles[indexPath.row]
         
         let webvc = WebViewController()
         webvc.url = article.url
