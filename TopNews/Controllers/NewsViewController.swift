@@ -15,7 +15,10 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     private lazy var mainView = MainView()
     private lazy var refreshControl = UIRefreshControl()
-
+    private var isFetching = false
+    private var currentPage = 1
+    private let apiService = APIService()
+    
     override func loadView() {
         super.loadView()
         
@@ -40,6 +43,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         view.backgroundColor = UIColor.white
         
         mainView.tableView.register(NewsTableViewCell.self, forCellReuseIdentifier: "newsCellId")
+        mainView.tableView.register(LoadingTableViewCell.self, forCellReuseIdentifier: "loadingCell")
         mainView.tableView.delegate = self
         mainView.tableView.dataSource = self
         
@@ -76,24 +80,51 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     fileprivate func fetchArticleImage(_ url: String, _ cell: NewsTableViewCell) {
-        APIService().fetchDataFrom(url: URL(string: url)!) { error, data in
-            var img = UIImage(named: "default")
-            
+        apiService.fetchDataFrom(url: URL(string: url)!) { error, data in
             if let error = error {
                 print("Error fetching image with url \(url). Error: \(error)")
-            } else if let data = data {
-                img = UIImage(data: data)
+                return
             }
             
-            DispatchQueue.main.async {
-                cell.articleImage.image = img
+            if let data = data {
+                let img = UIImage(data: data)
+                DispatchQueue.main.async {
+                    cell.articleImage.image = img
+                }
             }
         }
     }
-
+    
+    private func fetchNextPage() {
+        guard let category = category, isFetching == false else { return }
+        isFetching = true
+        currentPage += 1
+        print("Fetching page number \(currentPage)")
+        self.mainView.tableView.reloadData()
+        apiService.fetchTopHeadlinesFor(category: category, page: currentPage) { [weak self] error, articles in
+            self?.isFetching = false
+            
+            if let error = error {
+                print("Error fetching next page: \(error)")
+                
+                // Correct page number to retry it on the next fetch
+                self?.currentPage -= 1
+                return
+            }
+            
+            if let articles = articles {
+                self?.articles.append(contentsOf: articles)
+            }
+            
+            DispatchQueue.main.async {
+                self?.mainView.tableView.reloadData()
+            }
+        }
+    }
+    
     // MARK: - TableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return articles.count
+        return articles.count + (isFetching ? 1 : 0)
     }
     
     // Default value for cell height
@@ -102,18 +133,36 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "newsCellId", for: indexPath) as! NewsTableViewCell
-        let article = articles[indexPath.row]
+        var tableViewCell: UITableViewCell!
         
-        cell.backgroundColor = UIColor.clear
-        cell.titleLabel.text = article.title
-        cell.dateLabel.text = article.publishedAt
-        
-        if let url = article.urlToImage {
-            fetchArticleImage(url, cell)
+        if indexPath.row < articles.count {
+            // It's an article cell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "newsCellId", for: indexPath) as! NewsTableViewCell
+            let article = articles[indexPath.row]
+            
+            cell.articleImage.image = UIImage(named: "default")
+            cell.backgroundColor = UIColor.clear
+            cell.titleLabel.text = article.title
+            cell.dateLabel.text = article.publishedAt
+            
+            if let url = article.urlToImage {
+                fetchArticleImage(url, cell)
+            }
+            
+            tableViewCell = cell
+        } else if indexPath.row == articles.count {
+            // It's the loading cell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "loadingCell", for: indexPath) as! LoadingTableViewCell
+            cell.loadingActivityIndicator.startAnimating()
+            tableViewCell = cell
         }
         
-        return cell
+        // Reached last element, load next page if it's not fetching already
+        if indexPath.row == articles.count - 1 && !isFetching {
+            fetchNextPage()
+        }
+        
+        return tableViewCell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
