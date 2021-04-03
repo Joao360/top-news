@@ -28,7 +28,7 @@ class MainView: UIView {
             tableView.topAnchor.constraint(equalTo: self.safeTopAnchor, constant: 16),
             tableView.bottomAnchor.constraint(equalTo: self.safeBottomAnchor),
             tableView.leftAnchor.constraint(equalTo: self.safeLeftAnchor),
-            tableView.safeRightAnchor.constraint(equalTo: self.safeRightAnchor)
+            tableView.rightAnchor.constraint(equalTo: self.safeRightAnchor)
         ])
         
         tableView.register(CategoryTableViewCell.self, forCellReuseIdentifier: "cellId")

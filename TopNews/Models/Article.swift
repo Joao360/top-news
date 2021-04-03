@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TopHeadlinesResponse: Decodable {
+struct NewsListResponse: Decodable {
     let status: String
     let totalResults: Int
     let articles: [Article]

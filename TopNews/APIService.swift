@@ -20,6 +20,7 @@ struct APIService {
             URLQueryItem(name: "country", value: countryCode ?? "us"),
             URLQueryItem(name: "category", value: category),
             URLQueryItem(name: "pageSize", value: String(pageSize)),
+            URLQueryItem(name: "page", value: String(page)),
             apiKeyQueryItem,
         ]
         
@@ -28,10 +29,10 @@ struct APIService {
         
         let url = urlComponents.url!
         
-        fetchDataFrom(url: url) { error, data in
+        let _ = fetchDataFrom(url: url) { error, data in
             if let data = data {
                 do {
-                    let topHeadlines = try JSONDecoder().decode(TopHeadlinesResponse.self, from: data)
+                    let topHeadlines = try JSONDecoder().decode(NewsListResponse.self, from: data)
                     print("Received \(topHeadlines.totalResults) new articles")
                     completionHandler(nil, topHeadlines.articles)
                 } catch {
@@ -42,7 +43,34 @@ struct APIService {
         }
     }
     
-    func fetchDataFrom(url: URL, completionHandler: @escaping (String?, Data?) -> Void) {
+    func fetchEverything(query: String, page: Int, completionHandler: @escaping (String?, [Article]?) -> Void) -> URLSessionDataTask {
+        let queryItems = [
+            URLQueryItem(name: "pageSize", value: String(pageSize)),
+            URLQueryItem(name: "q", value: query),
+            URLQueryItem(name: "page", value: String(page)),
+            apiKeyQueryItem,
+        ]
+        
+        var urlComponents = URLComponents(string: apiUrl + "/everything")!
+        urlComponents.queryItems = queryItems
+        
+        let url = urlComponents.url!
+        
+        return fetchDataFrom(url: url) { error, data in
+            if let data = data {
+                do {
+                    let topHeadlines = try JSONDecoder().decode(NewsListResponse.self, from: data)
+                    print("Received \(topHeadlines.totalResults) new articles")
+                    completionHandler(nil, topHeadlines.articles)
+                } catch {
+                    print(error)
+                    completionHandler(error.localizedDescription, nil)
+                }
+            }
+        }
+    }
+    
+    func fetchDataFrom(url: URL, completionHandler: @escaping (String?, Data?) -> Void) -> URLSessionDataTask {
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
                 completionHandler("Error accessing api: \(error)", nil)
@@ -63,5 +91,6 @@ struct APIService {
         }
         
         task.resume()
+        return task
     }
 }

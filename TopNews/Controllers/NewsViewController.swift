@@ -11,7 +11,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var delegate: NewsDelegate!
     
-    private lazy var mainView = MainView()
+    lazy var mainView = MainView()
     // Used to pull to refresh
     private lazy var refreshControl = UIRefreshControl()
     
@@ -82,7 +82,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     // Retrieves the image from an url and overrides the cell image with the result if successful
     fileprivate func fetchArticleImage(_ url: String, _ cell: NewsTableViewCell) {
-        APIService().fetchDataFrom(url: URL(string: url)!) { error, data in
+        let _ = APIService().fetchDataFrom(url: URL(string: url)!) { error, data in
             if let error = error {
                 print("Error fetching image with url \(url). Error: \(error)")
                 return

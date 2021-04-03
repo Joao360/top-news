@@ -46,6 +46,17 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         mainView.tableView.register(CategoryTableViewCell.self, forCellReuseIdentifier: "cellId")
         mainView.tableView.delegate = self
         mainView.tableView.dataSource = self
+        
+        setupSearchButton()
+    }
+    
+    private func setupSearchButton() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(onSearchButtonClick(_:)))
+        navigationItem.rightBarButtonItem?.tintColor = UIColor.darkGray
+    }
+    
+    @objc private func onSearchButtonClick(_ sender: Any) {
+        self.navigationController?.pushViewController(SearchViewController(), animated: true)
     }
     
     // MARK: - TableView
